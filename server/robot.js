@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 // var http = require('http');
 var markov = require('./markovCode');
 var fs = require('fs');
-var cors = require('cors');
+// var cors = require('cors');
 
 // Require bluebird so that as soon as req comes in, promisify it.
 var app = express();
@@ -17,8 +17,7 @@ var port = process.env.PORT || 7085;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser());
 
-app.use(express.static(__dirname)); // __dirname = server right now. dirname + ../ = AreYouARobot, so dirname + '../client'
-
+app.use(express.static(__dirname)); // __dirname = server 
 var defaultCorsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
