@@ -1,0 +1,41 @@
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-rc.3/angular.min.js"></script>
+  <script src="testpage.js"></script>
+</head>
+<body ng-app="testPage">
+  <div ng-controller="HomeController">
+    <div style="border:1px solid black"> Get an Answer 
+      <form class="question">
+        <input ng-model="question"></input>
+        <button ng-click="getSentence(question)">Submit</button>
+      </form>
+      <div ng-model="sentence">{{sentence}}</div>
+    </div> 
+    <div style="border:1px solid black"> Choose the best response: 
+      <div style="font-weight:bold">{{upvoteQuestion}}</div>
+      <form>
+        <label ng-repeat="good in sentences" for="{{good}}">
+          <input type="radio"
+              ng-model="my.favorite"
+              ng-value="good"
+              id="{{good}}"
+              name="favorite"> {{good}}<br/>
+        </label>
+        <button ng-click="upvoteSentence()">Submit</button>
+      </form>
+    </div>
+    <div style="border:1px solid black"> Choose the worst response: 
+      <div style="font-weight:bold">{{downvoteQuestion}}</div>
+      <form>
+        <label ng-repeat="bad in notSentences" for="{{bad}}">
+          <input type="radio"
+              ng-model="my.worst"
+              ng-value="bad"
+              id="{{bad}}"
+              name="favorite"> {{bad}}<br/>
+        </label>
+        <button ng-click="downvoteSentence()">Submit</button>
+      </form>
+    </div>
+  </div>
+</body>
