@@ -13,13 +13,23 @@ var app = express();
 var port = process.env.PORT || 7085;
 
 
-app.use(cors());
+// app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser());
 
 app.use(express.static(__dirname)); // __dirname = server right now. dirname + ../ = AreYouARobot, so dirname + '../client'
 
-app.options('*', cors());
+var defaultCorsHeaders = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "access-control-allow-headers": "content-type, accept",
+  "access-control-max-age": 10 // Seconds.
+};
+
+app.options('*', function(req, res){
+  res.status(200).set(defaultCorsHeaders).send();
+  res.end();
+});
 
 var chooseRandomTopic = function (sentence) {
   var words = sentence.split(' ');
@@ -33,7 +43,7 @@ app.post('/api/ask', function (req, res) {
   var question = req.body.question;
   var topic = chooseRandomTopic(question);
   var response = markov.makeBackSentence(topic) + ' ' + markov.makeSentence(topic).slice(topic.length);
-  res.status(200).send(response);
+  res.status(200).set(defaultCorsHeaders).send(response);
   res.end();
 });
 
