@@ -55,7 +55,7 @@ exports.makeBackSentence = function (startingWord) {
   }
   //set current word
   var currentWord = startingWord;
-  if (backwardChain[currentWord] === undefined) {
+  if (backwardChain[currentWord] === undefined || currentWord.indexOf(' ') === -1) {
     return 'I don\'t know what that is.';
   }
   var seed = 0;
@@ -90,8 +90,8 @@ exports.makeSentence = function (startingWord) {
   //set current word
   var currentWord = startingWord;
   //if current pair not in markov, return placeholder
-  if (markovChain[currentWord] === undefined) {
-    return 'I don\'t know what that is.';
+  if (markovChain[currentWord] === undefined || currentWord.indexOf(' ') === -1) {
+    return currentWord;
   }
   var seed = 0;
   var cumulativeCount = 0;
