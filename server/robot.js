@@ -33,12 +33,15 @@ app.options('*', function(req, res){
 var chooseRandomTopic = function (sentence) {
   var words = sentence.split(' ');
   var topicIndex = words.length - 2;
-  var topic =  words[topicIndex].toLowerCase() + ' ' + words[topicIndex + 1];
-  return topic;
+  if(topicIndex >= 1){
+    var topic =  words[topicIndex].toLowerCase() + ' ' + words[topicIndex + 1].toLowerCase();
+    return topic;
+  } else {
+    return sentence;
+  }
 };
 
 app.post('/api/ask', function (req, res) {
-  console.log(req.body);
   var question = req.body.question;
   var topic = chooseRandomTopic(question);
   var response = markov.makeBackSentence(topic) + ' ' + markov.makeSentence(topic).slice(topic.length);
