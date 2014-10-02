@@ -12,7 +12,6 @@ var fs = require('fs');
 var app = express();
 var port = process.env.PORT || 7085;
 
-
 // app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser());
@@ -58,6 +57,16 @@ app.post('/api/downvote', function (req, res) {
   //will decrease percentages on sets of words in this sentence
   console.log(req.body);
 });
+
+// *************************** //
+var sentenceParser = require('./sentenceParser.js');
+app.post('/api/getContext', function(req, res) {
+  var taggedWords = sentenceParser.parseSentence(req.body.phrase);
+  var context = sentenceParser.identifyContext(taggedWords);
+  console.log(context);
+  res.status(200).send(context);
+});
+// *************************** //
 
 var pathName = __dirname;
 
