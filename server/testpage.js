@@ -11,8 +11,8 @@ angular.module('testPage', [
   };
   $scope.upvoteQuestion = 'What are some sentences?';
   $scope.downvoteQuestion = 'What are some sentences?';
-  $scope.sentences = ['sentence will go here', 'sentence will go here too'];
-  $scope.notSentences= ['apple, orange, banana, kumquat', 'words hard are monkey'];
+  $scope.sentences = ['sentence will go into', 'sentence will go here too'];
+  $scope.notSentences= ['apple, orange, banana, kumquat', 'words hard are monkey', 'sentence will go into'];
   $scope.my = {favorite: 'none', worst: 'none'};
   $scope.upvoteSentence = function () {
     console.log($scope.upvoteQuestion, $scope.my.favorite);

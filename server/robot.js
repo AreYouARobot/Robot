@@ -50,12 +50,12 @@ app.post('/api/ask', function (req, res) {
 
 app.post('/api/upvote', function (req, res) {
   //will increase percentages on sets of words in this sentence
-  console.log(req.body);
+  markov.upvote(req.body.best);
 });
 
 app.post('/api/downvote', function (req, res) {
   //will decrease percentages on sets of words in this sentence
-  console.log(req.body);
+  markov.downvote(req.body.worst);
 });
 
 // *************************** //
@@ -101,6 +101,7 @@ setTimeout(function () {
   exports.array.forEach(function (value) {
     markov.addSnippets(value);
     markov.addBackSnippets(value);
+    console.log('Server Ready');
   });
 }, 1000);
 
