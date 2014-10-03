@@ -4,7 +4,11 @@ angular.module('testPage', [
 ])
 .controller('HomeController', function ($scope, robot) {
   $scope.getSentence = function (sentence) {
-    $scope.sentences=[];
+    robot.getContext(sentence)
+    .success(function (context) {
+      $scope.context = context;
+    });
+    $scope.sentences = [];
     for(var i = 0; i < 4; i++){
       robot.getSentence(sentence)
       .success(function (sentence) {
@@ -19,7 +23,7 @@ angular.module('testPage', [
     robot.upvoteSentence($scope.upvoteQuestion, $scope.my.favorite);
   };
 
-    $scope.downvoteSentence = function () {
+  $scope.downvoteSentence = function () {
     console.log($scope.my.worst);
     robot.downvoteSentence($scope.downvoteQuestion, $scope.my.worst);
   };
@@ -51,9 +55,17 @@ angular.module('testPage', [
       data: {question: question, worst: worstAnswer}
     });
   };
+  var getContext = function (context) {
+    return $http({
+      method: 'POST',
+      url: '/api/getContext',
+      data: {phrase: context}
+    });
+  };
   return {
     getSentence: getSentence,
     upvoteSentence: upvoteSentence,
-    downvoteSentence: downvoteSentence
+    downvoteSentence: downvoteSentence,
+    getContext: getContext
   };
 });

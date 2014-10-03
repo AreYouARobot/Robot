@@ -40,9 +40,16 @@ var chooseRandomTopic = function (sentence) {
   }
 };
 
+var chooseContext = function(sentence){
+  var taggedWords = sentenceParser.parseSentence(sentence);
+  var context = sentenceParser.identifyContext(taggedWords);
+  console.log(context);
+  return context;
+}
+
 app.post('/api/ask', function (req, res) {
   var question = req.body.question;
-  var topic = chooseRandomTopic(question);
+  var topic = chooseContext(question);
   var response = markov.makeBackSentence(topic) + ' ' + markov.makeSentence(topic).slice(topic.length);
   res.status(200).set(defaultCorsHeaders).send(response);
   res.end();
@@ -61,9 +68,10 @@ app.post('/api/downvote', function (req, res) {
 // *************************** //
 var sentenceParser = require('./sentenceParser.js');
 app.post('/api/getContext', function(req, res) {
-  var taggedWords = sentenceParser.parseSentence(req.body.phrase);
-  var context = sentenceParser.identifyContext(taggedWords);
-  console.log(context);
+  // var taggedWords = sentenceParser.parseSentence(req.body.phrase);
+  // var context = sentenceParser.identifyContext(taggedWords);
+  // console.log(context);
+  var context = chooseContext(req.body.phrase);
   res.status(200).send(context);
 });
 // *************************** //

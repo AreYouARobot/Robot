@@ -4,12 +4,15 @@
 </head>
 <body ng-app="testPage">
   <div ng-controller="HomeController">
-    <div style="border:1px solid black"> Get an Answer 
+    <div style="border:1px solid black"> <span style="font-weight: bold">Ask a Question: </span>
       <form class="question">
         <input ng-model="question"></input>
         <button ng-click="getSentence(question)">Submit</button>
       </form>
       <div ng-model="sentence">{{sentence}}</div>
+    </div> 
+    <div style="border:1px solid black"> <span style="font-weight: bold">The Context is: </span>
+      <div>{{context}}</div>
     </div> 
     <div style="border:1px solid black"> <span style="font-weight: bold">Choose the best response: </span>
       <form>
