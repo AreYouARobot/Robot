@@ -15,6 +15,8 @@ var backwardChain = {};
 // for each sentence, take current indexed word 
 exports.addSnippets = function (sentence) {
 	sentence = sentence.toLowerCase().replace(/\n/g, ' ').replace(/\./g, ' EOSMARKER BOSMARKER').split(' ');
+  sentence.unshift('BOSMARKER');
+  sentence.push('EOSMARKER');
   for (var i = 0; i < sentence.length - 2; i++) {
     //glom together 2-4 words
     if (!markovChain[sentence[i] + ' ' + sentence[i + 1]]) {
@@ -47,6 +49,7 @@ exports.addBackSnippets = function (sentence) {
 };
 
 exports.upvote = function (sentence) {
+  sentence = sentence.trim();
   exports.addBackSnippets(sentence);
   exports.addSnippets(sentence);
   console.log('Sentence Upvoted!');

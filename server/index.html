@@ -11,8 +11,7 @@
       </form>
       <div ng-model="sentence">{{sentence}}</div>
     </div> 
-    <div style="border:1px solid black"> Choose the best response: 
-      <div style="font-weight:bold">{{upvoteQuestion}}</div>
+    <div style="border:1px solid black"> <span style="font-weight: bold">Choose the best response: </span>
       <form>
         <label ng-repeat="good in sentences" for="{{good}}">
           <input type="radio"
@@ -24,10 +23,9 @@
         <button ng-click="upvoteSentence()">Submit</button>
       </form>
     </div>
-    <div style="border:1px solid black"> Choose the worst response: 
-      <div style="font-weight:bold">{{downvoteQuestion}}</div>
+    <div style="border:1px solid black"> <span style="font-weight: bold">Choose the worst response: </span>
       <form>
-        <label ng-repeat="bad in notSentences" for="{{bad}}">
+        <label ng-repeat="bad in sentences" for="{{bad}}">
           <input type="radio"
               ng-model="my.worst"
               ng-value="bad"
