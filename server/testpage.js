@@ -4,23 +4,27 @@ angular.module('testPage', [
 ])
 .controller('HomeController', function ($scope, robot) {
   $scope.getSentence = function (sentence) {
-    robot.getSentence(sentence)
-    .success(function (sentence) {
-      $scope.sentence = sentence;
+    robot.getContext(sentence)
+    .success(function (context) {
+      $scope.context = context;
     });
+    $scope.sentences = [];
+    for(var i = 0; i < 4; i++){
+      robot.getSentence(sentence)
+      .success(function (sentence) {
+        $scope.sentences.push(sentence);
+      });
+      
+    }
   };
-  $scope.upvoteQuestion = 'What are some sentences?';
-  $scope.downvoteQuestion = 'What are some sentences?';
-  $scope.sentences = ['sentence will go here', 'sentence will go here too'];
-  $scope.notSentences= ['apple, orange, banana, kumquat', 'words hard are monkey'];
   $scope.my = {favorite: 'none', worst: 'none'};
   $scope.upvoteSentence = function () {
-    console.log($scope.upvoteQuestion, $scope.my.favorite);
+    console.log($scope.my.favorite);
     robot.upvoteSentence($scope.upvoteQuestion, $scope.my.favorite);
   };
 
-    $scope.downvoteSentence = function () {
-    console.log($scope.downvoteQuestion, $scope.my.worst);
+  $scope.downvoteSentence = function () {
+    console.log($scope.my.worst);
     robot.downvoteSentence($scope.downvoteQuestion, $scope.my.worst);
   };
 
@@ -51,9 +55,17 @@ angular.module('testPage', [
       data: {question: question, worst: worstAnswer}
     });
   };
+  var getContext = function (context) {
+    return $http({
+      method: 'POST',
+      url: '/api/getContext',
+      data: {phrase: context}
+    });
+  };
   return {
     getSentence: getSentence,
     upvoteSentence: upvoteSentence,
-    downvoteSentence: downvoteSentence
+    downvoteSentence: downvoteSentence,
+    getContext: getContext
   };
 });

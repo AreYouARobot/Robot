@@ -15,7 +15,9 @@ var backwardChain = {};
 // for each sentence, take current indexed word 
 exports.addSnippets = function (sentence) {
 	sentence = sentence.toLowerCase().replace(/\n/g, ' ').replace(/\./g, ' EOSMARKER BOSMARKER').split(' ');
-  for (var i = 0; i < sentence.length - 1; i++) {
+  sentence.unshift('BOSMARKER');
+  sentence.push('EOSMARKER');
+  for (var i = 0; i < sentence.length - 2; i++) {
     //glom together 2-4 words
     if (!markovChain[sentence[i] + ' ' + sentence[i + 1]]) {
       markovChain[sentence[i] + ' ' + sentence[i + 1]] = {};
@@ -46,6 +48,42 @@ exports.addBackSnippets = function (sentence) {
   }
 };
 
+exports.upvote = function (sentence) {
+  sentence = sentence.trim();
+  exports.addBackSnippets(sentence);
+  exports.addSnippets(sentence);
+  console.log('Sentence Upvoted!');
+};
+
+exports.downvote = function (sentence) {
+  sentence = sentence.toLowerCase().replace(/\n/g, ' ').replace(/\./g, ' EOSMARKER BOSMARKER').split(' ');
+  sentence.unshift('BOSMARKER');
+  sentence.push('EOSMARKER');
+  var tuple;
+  for (var i = 0; i < sentence.length - 2; i++) {
+    tuple = markovChain[sentence[i] + ' ' + sentence[i + 1]];
+    if (tuple !== undefined) {
+      //reduce totNumOfWords
+      if (tuple.totNumOfWords > 1 && tuple[sentence[i + 2]]) {
+        tuple.totNumOfWords--;
+        //reduce number of the individual word
+        tuple[sentence[i + 2]]--;
+      }
+    }
+  }
+  for (i = sentence.length - 1; i > 1; i--) {
+    tuple = backwardChain[sentence[i - 1] + ' ' + sentence[i]];
+    if (tuple !== undefined) {
+      //reduce totNumOfWords
+      if (tuple.totNumOfWords > 1 && tuple[sentence[i - 2]]) {
+        tuple.totNumOfWords--;
+        //reduce number of the individual word
+        tuple[sentence[i - 2]]--;
+      }
+    }
+  }
+  console.log('Sentence Downvoted!');
+};
 
 exports.makeBackSentence = function (startingWord) {
   //add the last word unless it's EOSMARKER

@@ -40,9 +40,16 @@ var chooseRandomTopic = function (sentence) {
   }
 };
 
+var chooseContext = function(sentence){
+  var taggedWords = sentenceParser.parseSentence(sentence);
+  var context = sentenceParser.identifyContext(taggedWords);
+  console.log(context);
+  return context;
+}
+
 app.post('/api/ask', function (req, res) {
   var question = req.body.question;
-  var topic = chooseRandomTopic(question);
+  var topic = chooseContext(question);
   var response = markov.makeBackSentence(topic) + ' ' + markov.makeSentence(topic).slice(topic.length);
   res.status(200).set(defaultCorsHeaders).send(response);
   res.end();
@@ -50,20 +57,21 @@ app.post('/api/ask', function (req, res) {
 
 app.post('/api/upvote', function (req, res) {
   //will increase percentages on sets of words in this sentence
-  console.log(req.body);
+  markov.upvote(req.body.best);
 });
 
 app.post('/api/downvote', function (req, res) {
   //will decrease percentages on sets of words in this sentence
-  console.log(req.body);
+  markov.downvote(req.body.worst);
 });
 
 // *************************** //
 var sentenceParser = require('./sentenceParser.js');
 app.post('/api/getContext', function(req, res) {
-  var taggedWords = sentenceParser.parseSentence(req.body.phrase);
-  var context = sentenceParser.identifyContext(taggedWords);
-  console.log(context);
+  // var taggedWords = sentenceParser.parseSentence(req.body.phrase);
+  // var context = sentenceParser.identifyContext(taggedWords);
+  // console.log(context);
+  var context = chooseContext(req.body.phrase);
   res.status(200).send(context);
 });
 // *************************** //
@@ -101,6 +109,7 @@ setTimeout(function () {
   exports.array.forEach(function (value) {
     markov.addSnippets(value);
     markov.addBackSnippets(value);
+    console.log('Server Ready');
   });
 }, 1000);
 
