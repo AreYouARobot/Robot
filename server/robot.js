@@ -8,9 +8,10 @@ var markov = require('./markovCode');
 var fs = require('fs');
 // var cors = require('cors');
 
-// Require bluebird so that as soon as req comes in, promisify it.
 var app = express();
 var port = process.env.PORT || 7085;
+
+var wiki = require('./wikiParser.js')
 
 // app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -67,7 +68,7 @@ app.post('/api/downvote', function (req, res) {
 
 // *************************** //
 var sentenceParser = require('./sentenceParser.js');
-app.post('/api/getContext', function(req, res) {
+app.post('/api/getContext', function (req, res) {
   // var taggedWords = sentenceParser.parseSentence(req.body.phrase);
   // var context = sentenceParser.identifyContext(taggedWords);
   // console.log(context);
@@ -76,40 +77,60 @@ app.post('/api/getContext', function(req, res) {
 });
 // *************************** //
 
-var pathName = __dirname;
+// var pathName = __dirname;
 
 
 app.listen(port);
 console.log('Server running on port %d', port);
 
-exports = module.exports = app;
-
-exports.readFileData = function (fileName, chats) {
-  fs.readFile(fileName, function (err, data) {
-    if (err) {
-      console.log(err);
-    } else {
-      //split by sentence into arrays
-      var phrases = data.toString();
-      //for each paragraph
-      chats.push(phrases);
-    }
-  });
+var maxSize = 300000;
+var getWikiData = function () {
+  setTimeout(function () {
+    wiki.wiki(wiki.getNext(), function (text) {
+      if(text !== undefined) {
+        markov.addSnippets(text);
+        markov.addBackSnippets(text);
+      }
+      if (markov.getLength() < maxSize && wiki.remainingArticles() > 0) {
+        console.log('Markov length: ' + markov.getLength());
+        console.log('Wiki articles parsed: ' + wiki.parsedArticles());
+        console.log('Wiki articles left: ' + wiki.remainingArticles());
+        getWikiData();
+      }
+    });
+  }, 10000);
 };
 
-exports.array = [];
-// exports.readFileData(__dirname + '/austen-emma.txt', exports.array);
-// exports.readFileData(__dirname + '/melville-moby_dick.txt', exports.array);
-// exports.readFileData(__dirname + '/austen-persuasion.txt', exports.array);
-// exports.readFileData(__dirname + '/whitman-leaves.txt', exports.array);
-// exports.readFileData(__dirname + '/whitman-leaves.txt', exports.array);
-exports.readFileData(pathName + '/bible-kjv.txt', exports.array);
+getWikiData();
 
-setTimeout(function () {
-  exports.array.forEach(function (value) {
-    markov.addSnippets(value);
-    markov.addBackSnippets(value);
-    console.log('Server Ready');
-  });
-}, 1000);
+exports = module.exports = app;
+
+// exports.readFileData = function (fileName, chats) {
+//   fs.readFile(fileName, function (err, data) {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       //split by sentence into arrays
+//       var phrases = data.toString();
+//       //for each paragraph
+//       chats.push(phrases);
+//     }
+//   });
+// };
+
+// exports.array = [];
+// // exports.readFileData(__dirname + '/austen-emma.txt', exports.array);
+// // exports.readFileData(__dirname + '/melville-moby_dick.txt', exports.array);
+// // exports.readFileData(__dirname + '/austen-persuasion.txt', exports.array);
+// // exports.readFileData(__dirname + '/whitman-leaves.txt', exports.array);
+// // exports.readFileData(__dirname + '/whitman-leaves.txt', exports.array);
+// exports.readFileData(pathName + '/bible-kjv.txt', exports.array);
+
+// setTimeout(function () {
+//   exports.array.forEach(function (value) {
+//     markov.addSnippets(value);
+//     markov.addBackSnippets(value);
+//     console.log('Server Ready');
+//   });
+// }, 1000);
 
