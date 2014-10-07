@@ -20,7 +20,7 @@ var parseWikiText = function (text, cb) {
       parsedText.push(arguments[1]);
     });
     for (var i = 0; i < parsedText.length; i++) {
-      parsedText[i] = parsedText[i].replace(/<.*?\>/g, '');
+      parsedText[i] = parsedText[i].replace(/<.*?\>/g, ' ');
     }
     finalText = parsedText.join('');
     console.log('Text parsed');
