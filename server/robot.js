@@ -11,7 +11,7 @@ var fs = require('fs');
 var app = express();
 var port = process.env.PORT || 7085;
 
-var wiki = require('./wikiParser.js')
+var wiki = require('./wikiParser')
 
 // app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
