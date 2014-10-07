@@ -5,13 +5,13 @@ var express = require('express');
 var bodyParser = require('body-parser');
 // var http = require('http');
 var markov = require('./markovCode');
-var fs = require('fs');
+// var fs = require('fs');
+var wiki = require('./wikiParser');
 // var cors = require('cors');
 
 var app = express();
 var port = process.env.PORT || 7085;
 
-var wiki = require('./wikiParser')
 
 // app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
