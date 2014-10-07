@@ -7,8 +7,8 @@ exports = module.exports;
 // each word is structured as:
 // word1: {count: x, word2: count}
 
-var markovChain = {};
-var backwardChain = {};
+var markovChain = {length: 0};
+var backwardChain = {length: 0};
 
 // var sentenceArray = testSentence.replace(/\./g, ' EOSMARKER BOSMARKER').split(' ');
 
@@ -22,6 +22,7 @@ exports.addSnippets = function (sentence) {
     if (!markovChain[sentence[i] + ' ' + sentence[i + 1]]) {
       markovChain[sentence[i] + ' ' + sentence[i + 1]] = {};
       markovChain[sentence[i] + ' ' + sentence[i + 1]].totNumOfWords = 0;
+      markovChain.length++;
     }
     markovChain[sentence[i] + ' ' + sentence[i + 1]].totNumOfWords++;
     if (!markovChain[sentence[i] + ' ' + sentence[i + 1]][sentence[i + 2]]) {
@@ -29,6 +30,7 @@ exports.addSnippets = function (sentence) {
     }
     markovChain[sentence[i] + ' ' + sentence[i + 1]][sentence[i + 2]]++;
   }
+  console.log('Forward chain done');
 };
 
 // for each sentence, take current indexed word 
@@ -39,6 +41,7 @@ exports.addBackSnippets = function (sentence) {
     if (!backwardChain[sentence[i - 1] + ' ' + sentence[i]]) {
       backwardChain[sentence[i - 1] + ' ' + sentence[i]] = {};
       backwardChain[sentence[i - 1] + ' ' + sentence[i]].totNumOfWords = 0;
+      backwardChain.length++;
     }
     backwardChain[sentence[i - 1] + ' ' + sentence[i]].totNumOfWords++;
     if (!backwardChain[sentence[i - 1] + ' ' + sentence[i]][sentence[i - 2]]) {
@@ -46,6 +49,7 @@ exports.addBackSnippets = function (sentence) {
     }
     backwardChain[sentence[i - 1] + ' ' + sentence[i]][sentence[i - 2]]++;
   }
+  console.log('Backward chain done');
 };
 
 exports.upvote = function (sentence) {
@@ -153,4 +157,8 @@ exports.makeSentence = function (startingWord) {
     }
   }
   return sentence;
+};
+
+exports.getLength = function () {
+  return markovChain.length > backwardChain.length ? markovChain.length : backwardChain.length;
 };
