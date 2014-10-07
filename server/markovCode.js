@@ -89,7 +89,7 @@ exports.downvote = function (sentence) {
   console.log('Sentence Downvoted!');
 };
 
-exports.makeBackSentence = function (startingWord) {
+var makeBackSentence = function (startingWord) {
   //add the last word unless it's EOSMARKER
   var sentence = '';
   if (startingWord !== 'EOSMARKER') {
@@ -123,7 +123,7 @@ exports.makeBackSentence = function (startingWord) {
   return sentence;
 };
 
-exports.makeSentence = function (startingWord) {
+var makeSentence = function (startingWord) {
   //add the first word unless it's BOSMARKER
   var sentence = '';
   if (startingWord !== 'BOSMARKER') {
@@ -161,4 +161,17 @@ exports.makeSentence = function (startingWord) {
 
 exports.getLength = function () {
   return markovChain.length > backwardChain.length ? markovChain.length : backwardChain.length;
+};
+
+exports.getSentence = function (topic) {
+  var sentence = makeBackSentence(topic) + ' ' + makeSentence(topic).slice(topic.length);
+  var sentenceArr = sentence.split(' ');
+  var numSentences = 1;
+  while (sentenceArr.length > 15 && numSentences < 20){
+    exports.downvote(sentence);
+    sentence = makeBackSentence(topic) + ' ' + makeSentence(topic).slice(topic.length);
+    sentenceArr = sentence.split(' ');
+    numSentences++;
+  }
+  return sentence;
 };

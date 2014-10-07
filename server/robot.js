@@ -50,7 +50,7 @@ var chooseContext = function(sentence){
 app.post('/api/ask', function (req, res) {
   var question = req.body.question;
   var topic = chooseContext(question);
-  var response = markov.makeBackSentence(topic) + ' ' + markov.makeSentence(topic).slice(topic.length);
+  var response = markov.getSentence(topic)
   res.status(200).set(defaultCorsHeaders).send(response);
   res.end();
 });
