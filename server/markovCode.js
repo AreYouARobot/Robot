@@ -1,5 +1,5 @@
 'use strict';
-
+var fs = require('fs');
 exports = module.exports;
 // MARKOV
 // expected input:
@@ -167,11 +167,30 @@ exports.getSentence = function (topic) {
   var sentence = makeBackSentence(topic) + ' ' + makeSentence(topic).slice(topic.length);
   var sentenceArr = sentence.split(' ');
   var numSentences = 1;
-  while (sentenceArr.length > 15 && numSentences < 20){
+  while (sentenceArr.length > 15 && numSentences < 20) {
     exports.downvote(sentence);
     sentence = makeBackSentence(topic) + ' ' + makeSentence(topic).slice(topic.length);
     sentenceArr = sentence.split(' ');
     numSentences++;
   }
   return sentence;
+};
+
+exports.saveFile = function (filename, cb) {
+  //json stringify and save to file
+  var chainString = JSON.stringify({markovChain: markovChain, backwardChain: backwardChain});
+  fs.writeFile(filename, chainString, cb);
+  console.log('Markov data saved!');
+};
+
+exports.readFile = function (filename, cb) {
+  //read from file and json parse
+  fs.readFile(filename, function (err, data) {
+    var markovData = JSON.parse(data);
+    markovChain = markovData.markovChain;
+    backwardChain = markovData.backwardChain;
+    console.log('Markov data read!');
+    console.log(markovChain.length)
+    cb();
+  });
 };

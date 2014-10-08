@@ -5,7 +5,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 // var http = require('http');
 var markov = require('./markovCode');
-// var fs = require('fs');
+var fs = require('fs');
 var wiki = require('./wikiParser');
 // var cors = require('cors');
 
@@ -84,24 +84,47 @@ app.listen(port);
 console.log('Server running on port %d', port);
 
 var maxSize = 300000;
-var getWikiData = function () {
+var filePath = __dirname + '/markov.txt';
+
+//saves data every minute
+var saveData = function () {
   setTimeout(function () {
-    wiki.wiki(wiki.getNext(), function (text) {
-      if(text !== undefined) {
-        markov.addSnippets(text);
-        markov.addBackSnippets(text);
-      }
-      if (markov.getLength() < maxSize && wiki.remainingArticles() > 0) {
-        console.log('Markov length: ' + markov.getLength());
-        console.log('Wiki articles parsed: ' + wiki.parsedArticles());
-        console.log('Wiki articles left: ' + wiki.remainingArticles());
-        getWikiData();
-      }
-    });
+    markov.saveFile(filePath, saveData);
+  }, 60000);
+};
+//fills data from wiki if insufficient
+var ensureSufficientData = function () {
+  setTimeout(function () {
+    if (markov.getLength() < maxSize && wiki.remainingArticles() > 0) {
+      wiki.getNext(function (data) {
+        wiki.wiki(data, function (text) {
+          if (text !== undefined) {
+            markov.addSnippets(text);
+            markov.addBackSnippets(text);
+            markov.saveFile(filePath);
+          }
+          console.log('Markov length: ' + markov.getLength());
+          console.log('Wiki articles parsed: ' + wiki.parsedArticles());
+          console.log('Wiki articles left: ' + wiki.remainingArticles());
+          ensureSufficientData();
+        });
+      });
+    }
   }, 10000);
 };
 
-getWikiData();
+
+fs.exists(filePath, function (exists) {
+  if (exists) {
+    console.log('Reading markov chain from text');
+    markov.readFile(filePath, ensureSufficientData);
+  } else {
+    console.log('No file present');
+    ensureSufficientData();
+  }
+});
+saveData();
+
 
 exports = module.exports = app;
 
