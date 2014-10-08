@@ -58,12 +58,20 @@ app.post('/api/ask', function (req, res) {
 
 app.post('/api/upvote', function (req, res) {
   //will increase percentages on sets of words in this sentence
+  var oldProb = (JSON.stringify(markov.getProbability(chooseContext(req.body.best))));
   markov.upvote(req.body.best);
+  var newProb = (JSON.stringify(markov.getProbability(chooseContext(req.body.best))));
+  var bothProbs = "old probability: " + oldProb + 'new probability: ' + newProb;
+  res.status(200).send(bothProbs);
 });
 
 app.post('/api/downvote', function (req, res) {
   //will decrease percentages on sets of words in this sentence
+  var oldProb = (JSON.stringify(markov.getProbability(chooseContext(req.body.worst))));
   markov.downvote(req.body.worst);
+  var newProb = (JSON.stringify(markov.getProbability(chooseContext(req.body.worst))));
+  var bothProbs = "old probability: " + oldProb + 'new probability: ' + newProb;
+  res.status(200).send(bothProbs);
 });
 
 // *************************** //
@@ -95,7 +103,7 @@ var saveData = function () {
 //fills data from wiki if insufficient
 var ensureSufficientData = function () {
   setTimeout(function () {
-    if (markov.getLength() < maxSize && wiki.remainingArticles() > 0) {
+    if (markov.getLength() < maxSize) {
       wiki.getNext(function (data) {
         wiki.wiki(data, function (text) {
           if (text !== undefined) {
