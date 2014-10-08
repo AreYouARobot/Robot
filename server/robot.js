@@ -57,6 +57,7 @@ app.post('/api/ask', function (req, res) {
 });
 
 app.post('/api/upvote', function (req, res) {
+  console.log(req.body);
   console.log(req.body.best);
   //will increase percentages on sets of words in this sentence
   var oldProb = (JSON.stringify(markov.getProbability(chooseContext(req.body.best))));
@@ -68,7 +69,8 @@ app.post('/api/upvote', function (req, res) {
 });
 
 app.post('/api/downvote', function (req, res) {
-  console.log(req.body.best);
+  console.log(req.body);
+  console.log(req.body.worst);
   //will decrease percentages on sets of words in this sentence
   var oldProb = (JSON.stringify(markov.getProbability(chooseContext(req.body.worst))));
   markov.downvote(req.body.worst);
