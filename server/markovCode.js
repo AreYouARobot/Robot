@@ -194,3 +194,7 @@ exports.readFile = function (filename, cb) {
     cb();
   });
 };
+
+exports.getProbability = function (phrase) {
+  return JSON.stringify(markovChain[phrase]);
+};
