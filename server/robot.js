@@ -62,7 +62,8 @@ app.post('/api/upvote', function (req, res) {
   markov.upvote(req.body.best);
   var newProb = (JSON.stringify(markov.getProbability(chooseContext(req.body.best))));
   var bothProbs = "old probability: " + oldProb + 'new probability: ' + newProb;
-  res.status(200).send(bothProbs);
+  console.log(bothProbs);
+  res.status(200).set(defaultCorsHeaders).send(bothProbs);
 });
 
 app.post('/api/downvote', function (req, res) {
@@ -71,7 +72,8 @@ app.post('/api/downvote', function (req, res) {
   markov.downvote(req.body.worst);
   var newProb = (JSON.stringify(markov.getProbability(chooseContext(req.body.worst))));
   var bothProbs = "old probability: " + oldProb + 'new probability: ' + newProb;
-  res.status(200).send(bothProbs);
+  console.log(bothProbs);
+  res.status(200).set(defaultCorsHeaders).send(bothProbs);
 });
 
 // *************************** //
