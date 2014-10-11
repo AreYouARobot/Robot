@@ -14,29 +14,25 @@
     <div style="border:1px solid black"> <span style="font-weight: bold">The Context is: </span>
       <div>{{context}}</div>
     </div> 
-    <div style="border:1px solid black"> <span style="font-weight: bold">Choose the best response: </span>
+    <div style="border:1px solid black"> <span style="font-weight: bold">Does this sentence make sense? </span>
       <form>
-        <label ng-repeat="good in sentences" for="{{good}}">
-          <input type="radio"
-              ng-model="my.favorite"
-              ng-value="good"
-              id="{{good}}"
-              name="favorite"> {{good}}<br/>
-        </label>
-        <button ng-click="upvoteSentence()">Submit</button>
+        <label>{{sentence}}</label>
+        <button ng-click="upvoteSentence()">Upvote</button>
+        <button ng-click="downvoteSentence()">Downvote</button>
+        <button ng-click="getSentence(sentence)">Get Next</button>
       </form>
     </div>
-    <div style="border:1px solid black"> <span style="font-weight: bold">Choose the worst response: </span>
-      <form>
-        <label ng-repeat="bad in sentences" for="{{bad}}">
-          <input type="radio"
-              ng-model="my.worst"
-              ng-value="bad"
-              id="{{bad}}"
-              name="favorite"> {{bad}}<br/>
-        </label>
-        <button ng-click="downvoteSentence()">Submit</button>
-      </form>
-    </div>
+    <table border=1>
+      <tr>
+        <th>Total Sentences Seen</th>
+        <th>Upvotes</th>
+        <th>Downvotes</th>
+      </tr>
+      <tr>
+        <td> {{total}} </td>
+        <td> {{upvotes}} </td>
+        <td> {{downvotes}} </td>
+      </tr>
+    </table>
   </div>
 </body>

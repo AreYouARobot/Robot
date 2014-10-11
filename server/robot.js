@@ -51,7 +51,7 @@ var chooseContext = function(sentence){
 app.post('/api/ask', function (req, res) {
   var question = req.body.question;
   var topic = chooseContext(question);
-  var response = markov.getSentence(topic)
+  var response = markov.getSentence(topic);
   res.status(200).set(defaultCorsHeaders).send(response);
   res.end();
 });
@@ -97,6 +97,7 @@ app.post('/api/getContext', function (req, res) {
 app.listen(port);
 console.log('Server running on port %d', port);
 
+
 var maxSize = 300000;
 var filePath = __dirname + '/markov.txt';
 
@@ -110,7 +111,7 @@ var saveData = function () {
 var ensureSufficientData = function () {
   setTimeout(function () {
     if (markov.getLength() < maxSize) {
-      wiki.getNext(function (data) {
+      wiki.getNext(['Robot', 'Color', 'Fruit', 'Weather', 'Sport', 'Small_talk'], function (data) {
         wiki.wiki(data, function (text) {
           if (text !== undefined) {
             markov.addSnippets(text);
