@@ -3,29 +3,30 @@
 angular.module('testPage', [
 ])
 .controller('HomeController', function ($scope, robot) {
+  $scope.total = 0;
+  $scope.upvotes = 0;
+  $scope.downvotes = 0;
   $scope.getSentence = function (sentence) {
     robot.getContext(sentence)
     .success(function (context) {
       $scope.context = context;
     });
-    $scope.sentences = [];
-    for(var i = 0; i < 4; i++){
-      robot.getSentence(sentence)
-      .success(function (sentence) {
-        $scope.sentences.push(sentence);
-      });
-      
-    }
+    robot.getSentence(sentence)
+    .success(function (sentence) {
+      $scope.sentence = sentence;
+      $scope.total++;
+    });
   };
-  $scope.my = {favorite: 'none', worst: 'none'};
   $scope.upvoteSentence = function () {
-    console.log($scope.my.favorite);
-    robot.upvoteSentence($scope.upvoteQuestion, $scope.my.favorite);
+    robot.upvoteSentence($scope.upvoteQuestion, $scope.sentence);
+    $scope.getSentence($scope.sentence);
+    $scope.upvotes++;
   };
 
   $scope.downvoteSentence = function () {
-    console.log($scope.my.worst);
-    robot.downvoteSentence($scope.downvoteQuestion, $scope.my.worst);
+    robot.downvoteSentence($scope.downvoteQuestion, $scope.sentence);
+    $scope.getSentence($scope.sentence);
+    $scope.downvotes++;
   };
 
 })

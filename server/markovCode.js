@@ -14,7 +14,7 @@ var backwardChain = {length: 0};
 
 // for each sentence, take current indexed word 
 exports.addSnippets = function (sentence) {
-	sentence = sentence.toLowerCase().replace(/\n/g, ' ').replace(/\./g, ' EOSMARKER BOSMARKER').split(' ');
+	sentence = sentence.replace(/\n/g, ' ').replace(/\./g, ' EOSMARKER BOSMARKER ').trim().split(' ');
   sentence.unshift('BOSMARKER');
   sentence.push('EOSMARKER');
   for (var i = 0; i < sentence.length - 2; i++) {
@@ -35,7 +35,7 @@ exports.addSnippets = function (sentence) {
 
 // for each sentence, take current indexed word 
 exports.addBackSnippets = function (sentence) {
-	sentence = sentence.toLowerCase().replace(/\n/g, ' ').replace(/\./g, ' EOSMARKER BOSMARKER').split(' ');
+	sentence = sentence.replace(/\n/g, ' ').replace(/\./g, ' EOSMARKER BOSMARKER ').trim().split(' ');
   for (var i = sentence.length - 1; i > 1; i--) {
   //glom together 2-4 words
     if (!backwardChain[sentence[i - 1] + ' ' + sentence[i]]) {
@@ -89,16 +89,26 @@ exports.downvote = function (sentence) {
   console.log('Sentence Downvoted!');
 };
 
+var selectRandomAnswer = function () {
+  var answerChoices = ['I don\'t know what that is.', 'What?', 'I\'ve never heard of it.', 'Nah, man.', 'Sure.'];
+  var answerIndex = Math.floor(Math.random() * answerChoices.length);
+  console.log(answerIndex);
+  var answer = answerChoices[answerIndex];
+  return answer;
+};
+
 var makeBackSentence = function (startingWord) {
   //add the last word unless it's EOSMARKER
   var sentence = '';
-  if (startingWord !== 'EOSMARKER') {
+  // if (startingWord !== 'EOSMARKER') {
     sentence += startingWord;
-  }
+  // }
   //set current word
   var currentWord = startingWord;
+
+  //select random sentence to return if sentence not found
   if (backwardChain[currentWord] === undefined || currentWord.indexOf(' ') === -1) {
-    return 'I don\'t know what that is.';
+    return selectRandomAnswer();
   }
   var seed = 0;
   var cumulativeCount = 0;
@@ -109,9 +119,9 @@ var makeBackSentence = function (startingWord) {
     for (var key in backwardChain[currentWord]) {
       if (key !== 'totNumOfWords') {
         if (cumulativeCount < seed && seed <= cumulativeCount + backwardChain[currentWord][key]) {
-          if (key !== 'BOSMARKER') {
+          // if (key !== 'BOSMARKER') {
             sentence = key + ' ' + sentence;
-          }
+          // }
           currentWord = key + ' ' + currentWord.slice(0, currentWord.indexOf(' '));
           break;
         } else {
@@ -126,9 +136,9 @@ var makeBackSentence = function (startingWord) {
 var makeSentence = function (startingWord) {
   //add the first word unless it's BOSMARKER
   var sentence = '';
-  if (startingWord !== 'BOSMARKER') {
+  // if (startingWord !== 'BOSMARKER') {
     sentence += startingWord;
-  }
+  // }
   //set current word
   var currentWord = startingWord;
   //if current pair not in markov, return placeholder
@@ -145,9 +155,9 @@ var makeSentence = function (startingWord) {
     for (var key in markovChain[currentWord]) {
       if (key !== 'totNumOfWords') {
         if (cumulativeCount < seed && seed <= cumulativeCount + markovChain[currentWord][key]) {
-          if (key !== 'EOSMARKER') {
+          // if (key !== 'EOSMARKER') {
             sentence += ' ' + key;
-          }
+          // }
           currentWord = currentWord.slice(currentWord.lastIndexOf(' ') + 1) + ' ' + key;
           break;
         } else {
@@ -158,6 +168,16 @@ var makeSentence = function (startingWord) {
   }
   return sentence;
 };
+
+var sentenceFormat = function(sentence){
+  if(sentence[0] === 'B'){
+    sentence = sentence.slice(10, sentence.length-10);
+    sentence = sentence.trim();
+    var char1 = sentence[0];
+    sentence = char1.toUpperCase() + sentence.slice(1, sentence.length) +'.';
+  }
+  return sentence;
+}
 
 exports.getLength = function () {
   return markovChain.length > backwardChain.length ? markovChain.length : backwardChain.length;
@@ -173,7 +193,7 @@ exports.getSentence = function (topic) {
     sentenceArr = sentence.split(' ');
     numSentences++;
   }
-  return sentence;
+  return sentenceFormat(sentence);
 };
 
 exports.saveFile = function (filename, cb) {
@@ -190,7 +210,6 @@ exports.readFile = function (filename, cb) {
     markovChain = markovData.markovChain;
     backwardChain = markovData.backwardChain;
     console.log('Markov data read!');
-    console.log(markovChain.length)
     cb();
   });
 };

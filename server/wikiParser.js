@@ -11,7 +11,7 @@ var fs = require('fs');
 var toBeParsed = [];
 var alreadyParsed = [];
 
-var parseWikiText = function (text, cb) {
+exports.parseWikiText = function (text, cb) {
   var parsedText = [];
   var finalText = '';
   var apple = JSON.parse(text.toString());
@@ -21,7 +21,7 @@ var parseWikiText = function (text, cb) {
       parsedText.push(arguments[1]);
     });
     for (var i = 0; i < parsedText.length; i++) {
-      parsedText[i] = parsedText[i].replace(/<.*?\>/g, ' ');
+      parsedText[i] = parsedText[i].replace(/<.*?\>/g, '');
     }
     finalText = parsedText.join('');
     console.log('Text parsed');
@@ -29,7 +29,7 @@ var parseWikiText = function (text, cb) {
   cb(finalText);
 };
 
-var getWikiPage = function (title, cb) {
+exports.getWikiPage = function (title, cb) {
   title = title.replace(/ /g, '%20');
   var httpOptions = {
     host: 'en.wikipedia.org',
@@ -44,12 +44,12 @@ var getWikiPage = function (title, cb) {
     });
     resp.on('end', function () {
       console.log('Page ' + title + ' fetched');
-      parseWikiText(buffer, cb);
+      exports.parseWikiText(buffer, cb);
     });
   });
 };
 
-var getLinks = function (title, cb) {
+exports.getLinks = function (title, cb) {
   title = title.replace(/ /g, '%20');
   var httpOptions = {
     host: 'en.wikipedia.org',
@@ -84,7 +84,7 @@ var getLinks = function (title, cb) {
         }
       }
       cb(title);
-      // parseWikiText(buffer, cb);
+      // exports.parseWikiText(buffer, cb);
     });
   });
 };
@@ -120,12 +120,12 @@ var setNextItem = function () {
 };
 
 exports.wiki = function (title, cb) {
-  getLinks(title, function () {
-    getWikiPage(title, cb);
+  exports.getLinks(title, function () {
+    exports.getWikiPage(title, cb);
   });
 };
 
-exports.getNext = function (cb) {
+exports.getNext = function (initialArticles, cb) {
   var nextItem = '';
   if (toBeParsed.length > 0) {
     nextItem = setNextItem();
@@ -136,7 +136,10 @@ exports.getNext = function (cb) {
         console.log('Reading wiki info from text');
         readFile(filePath, function (err, data) {
           if (err || data === undefined || data.length === 0) {
-            toBeParsed.push('Robot');
+            for (var i  = 0; i < initialArticles.length; i++) {
+              console.log(initialArticles[i])
+              toBeParsed.push(initialArticles[i]);
+            }
             nextItem = setNextItem();
             cb(nextItem);
           } else {
@@ -146,7 +149,10 @@ exports.getNext = function (cb) {
         });
       } else {
         console.log('No wiki file present, starting with Robot');
-        toBeParsed.push('Robot');
+         for (var i  = 0; i < initialArticles.length; i++) {
+          console.log(initialArticles[i])
+          toBeParsed.push(initialArticles[i]);
+        }
         nextItem = setNextItem();
         cb(nextItem);
       }
